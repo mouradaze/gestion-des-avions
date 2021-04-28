@@ -1,6 +1,6 @@
 #include<stdio.h>
-#include<stdio.h>
-#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
 typedef struct passager{
     char nom[25],prenom[25],adresse[30],tel[12];
@@ -9,15 +9,15 @@ typedef struct passager{
 }passager,*pass;
 
 typedef struct avion {
-    char code[25],pilote[25];
-    int modele,capacite,jrF,mnthF,anF;
+    char code[25],pilote[25],modele[25];
+    int capacite,jrF,mnthF,anF,nbrVA;
     struct avion *next , *before;
 }avion,*av;
 
 typedef struct vol{
     struct avion avVol;
     struct passager listePass;
-    int hDep,hArv;
+    int jDep,mDep,aDep,jArv,mArv,aArv;
     struct vol *next,*before;
 }vol,*vo;
 
@@ -25,10 +25,44 @@ vo initialise(vo v){
     return NULL;
 }
 
-vo ajout (vo v ){
-    vo v1 = v;
+vo ajout (vo v , char code[25],char pilote[25],char modele[25] ,int capacite,int jrF,int mnthF,int anF,int nbrVA , char nom[25], char prenom[25],char adresse[30],char tel[12], int age,int id,int jDep,int mDep,int aDep,int jArv,int mArv,int aArv){
+    vo v1 = v,v2;
     v1 = malloc(sizeof(vo));
+    strcpy(v1->avVol.code,code);/*strcpy(v1->avVol.pilote,pilote);strcpy(v1->avVol.modele,modele);
+    v1->avVol.capacite = capacite; v1->avVol.jrF = jrF; v1->avVol.mnthF = mnthF; v1->avVol.anF = anF; v1->avVol.nbrVA = nbrVA;
+    v1->listePass.age = age; v1->listePass.id = id;
+    strcpy(v1->listePass.nom,nom);strcpy(v1->listePass.prenom,prenom);strcpy(v1->listePass.adresse,adresse);strcpy(v1->listePass.tel,tel);
+    v1->jDep = jDep;v1->mDep = mDep;v1->aDep = aDep;
+    v1->jArv = jArv;v1->mArv = mArv;v1->aArv = aArv;*/
+    if(v == NULL){
+        return v1;
+    }
+    else{
+        v1->next = v;
+        v1->before = NULL;
+        v->before = v1;
+        return v1;
+    }
+
+
+}
+
+void affich(vo v){
+    int i = 1;
+    if(v == NULL)
+        printf("liste des vols est vide !\n");
+    while(v!=NULL){
+        printf("Vol %d : %s\n",i,v->avVol.code);
+        v = v->next;
+    }
 }
 int main (){
-
+char code[25] = "1010", pilote[25]="morad", modele[25]="x5" ;
+int capacite=1515, jrF=18, mnthF=8, anF=2012, nbrVA=15454 ; 
+char nom[25] ="hamada",  prenom[25] = "smoo", adresse[30] = "ddeaz232", tel[12] = "151515";  
+int age = 21, id = 121, jDep = 28, mDep = 4, aDep = 2021, jArv = 29, mArv = 4, aArv = 2021;
+    vo vol1;
+    vol1 = initialise(vol1);
+    vol1 = ajout(vol1, code,pilote, modele , capacite, jrF,mnthF, anF, nbrVA ,  nom,prenom, adresse,tel,  age, id,jDep,mDep,aDep,jArv,mArv,aArv);
+    affich(vol1);
 }
