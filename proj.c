@@ -9,7 +9,8 @@ typedef struct date{
 typedef struct passager {
     char id[10],nom[20],prenom[20],adresse[20],tel[12];
     int age;
-}passager;
+    struct passager *next,*before;
+}passager,*pa;
 
 typedef struct avion{
     char code[10],pilote[25];
@@ -18,8 +19,9 @@ typedef struct avion{
 }avion;
 
 typedef struct vol{
+    char codeVol;
     struct avion av;
-    struct passager pas;
+    pa pas;
     struct date dateDep,dateArv;
     struct vol *next,*before;
 }vol,*vo;
@@ -34,9 +36,9 @@ vo ajoutVol(vo v){
     vo v1;
     v1 = malloc(sizeof(vo));
         // avion
-    printf("Donner Le Code D'avion : ");scanf("%s",code);
+    printf("Donner Le Code D'avion : ");scanf("%s",code);fflush(stdin);
     strcpy(v1->av.code,code);
-    printf("Donner Le Pilote : ");scanf("%s",pilote);
+    printf("Donner Le Pilote : ");scanf("%s",pilote);fflush(stdin);
     strcpy(v1->av.pilote,pilote);
     printf("Donner Le Modele De Avion : ");scanf("%d",&modele);fflush(stdin);
     v1->av.modele = modele;
@@ -52,19 +54,31 @@ vo ajoutVol(vo v){
     printf("L'Annee : ");scanf("%d",&a);
     v1->av.date.a = a;
         // passager
-    printf("Donnez L'id Du Passager : ");scanf("%s",id);
-    strcpy(v1->pas.id,id);
+        
+    printf("Donnez L'id Du Passager : ");scanf("%s",id);fflush(stdin);
+    strcpy(v1->pas->id,id);
     printf("Donnez Le Nom Du Passager : ");scanf("%s",nom);fflush(stdin);
-    strcpy(v1->pas.nom,nom);
-    printf("Donnez Le Prenom Du Passager : ");scanf("%s",prenom);
-    strcpy(v1->pas.prenom,prenom);
+    strcpy(v1->pas->nom,nom);
+    printf("Donnez Le Prenom Du Passager : ");scanf("%s",prenom);fflush(stdin);
+    strcpy(v1->pas->prenom,prenom);
     printf("Donnez L'aadresse Du Passager : ");scanf("%s",adresse);fflush(stdin);
-    strcpy(v1->pas.adresse,adresse);
-    printf("Donnez Le Numero De Telephone Du Passager : ");scanf("%s",tel);
-    strcpy(v1->pas.tel,tel);
+    strcpy(v1->pas->adresse,adresse);
+    printf("Donnez Le Numero De Telephone Du Passager : ");scanf("%s",tel);fflush(stdin);
+    strcpy(v1->pas->tel,tel);
     printf("Donnez Age Du passager : ");scanf("%d",&age);
-    v1->pas.age = age;
+    v1->pas->age = age;
+    if(v1->pas == NULL){
+    v1->pas->next = NULL;
+    v1->pas->before = NULL;
+        }
+        else{
+            v1->pas->next = v->pas;
+            v->pas->before = v1->pas;
+            v1->pas->before = NULL;
+        }
         // vol
+    printf("Donnez Le Code Du Vol : ");scanf("%s",code);fflush(stdin);
+    strcpy(v1->codeVol,code);
     printf("Date De Depart :\n");
     printf("Le Jour : ");scanf("%d",&j);
     v1->dateDep.j = j;
@@ -72,7 +86,7 @@ vo ajoutVol(vo v){
     v1->dateDep.m = m;
     printf("L'Annee : ");scanf("%d",&a);
     v1->dateDep.a = a;
-    printf("Date De Depart :\n");
+    printf("Date D'Arriver :\n");
     printf("Le Jour : ");scanf("%d",&j);
     v1->dateArv.j = j;
     printf("Le Mois : ");scanf("%d",&m);
@@ -82,6 +96,7 @@ vo ajoutVol(vo v){
     if(v == NULL){
         v1->next = NULL;
         v1->before = NULL;
+        
         return v1;
     }
     else{
@@ -92,17 +107,110 @@ vo ajoutVol(vo v){
     }
 }
 
-/*vo ajoutPass (vo v){
+
+void recherche (vo v){
     vo v1 = v;
+    int tmp = 0;char id[10];
+    printf("Donner L'id Du Passager : ");scanf("%s",id);
     while(v1!=NULL){
-        if()
+        if(strcmp(v1->pas->id,id) == 0)
+            tmp = 1;
+        v1 = v1->next;
     }
-}*/
-void affich(vo v){
+    if(tmp == 1)
+        printf("Le Passager Existe !\n");
+    else
+        printf("Le Passager N'existe Pas !\n");
+}
+
+void volappart (vo v){
+    vo v1 = v;
+    char code[25];int tmp = 0;
+    printf("Donnez Le Code Du Vol : ");scanf("%s",code);
+    while(v1 !=NULL){
+        if(strcmp(v1->codeVol,code) == 0)
+            tmp = 1;
+        v1 = v1->next;
+    }
+    if(tmp == 1)
+        printf("Le Vol Existe !\n");
+    else
+        printf("Le Vol N'existe Pas !\n");
+}
+
+vo modifdate (vo v){
+    vo v1 = v;int j,m,a;char code[25];
+    printf("Donnez Le Code Du Vol : ");scanf("%s",code);
+    while(v1 != NULL){
+        if(strcmp(v1->codeVol,code) == 0){
+            printf("Donnez Une Date Superieure A La Date Actuelle\n");
+            printf("Date De Depart :\n");
+            do{
+            printf("Le Jour : ");scanf("%d",&j);
+            }while(j>v1->dateDep.j);
+            v1->dateDep.j = j;
+            
+
+            do{
+            printf("Le Mois : ");scanf("%d",&m);
+            }while(m>v1->dateDep.m);
+            v1->dateDep.m = m;
+            
+
+            do{
+            printf("L'Annee : ");scanf("%d",&a);
+            }while(a>v1->dateDep.a);
+            v1->dateDep.a = a;
+            
+
+
+            printf("Date D'Arriver :\n");
+            do{
+            printf("Le Jour : ");scanf("%d",&j);
+            }while(j>v1->dateDep.j);
+            v1->dateArv.j = j;
+            
+
+            do{
+            printf("Le Mois : ");scanf("%d",&m);
+            }while(m>v1->dateDep.m);
+            v1->dateArv.m = m;
+            
+
+            do{
+            printf("L'Annee : ");scanf("%d",&a);
+            }while(a>v1->dateDep.a);
+            v1->dateArv.a = a;
+            
+        }
+    }
+    return v;
+}
+void affichtt(vo v){
     if(v == NULL)
         printf("Rien a afficher");
     while(v!=NULL){
-        printf("%s\t%s",v->av.pilote,v->pas.adresse);
+        printf("Le Vol %s : \n",v->codeVol);
+        printf("Date De Depart :\n");
+        printf("Le Jour : %d",v->dateDep.j);
+        printf("Le Mois : %d",v->dateDep.m);
+        printf("L'Annee : %d",v->dateDep.a);
+        printf("Date D'Arriver :\n");
+        printf("Le Jour : %d",v->dateArv.j);
+        printf("Le Mois : %d",v->dateArv.m);
+        printf("L'Annee : %d",v->dateArv.a);
+
+        printf("Infos D'avion :\n");
+        printf("Le Code D'avion : %s\n");
+        printf("Le Pilote : %s\n");
+        printf("Le Modele De Avion : %d\n");
+        printf("La Capacite De Stockage : %d\n");
+        printf("Le Nombre De Vols Assures : %d\n");
+        printf("La Date De Fabrication : %d\n");
+        printf("Le Jour : %d\n");
+        printf("Le Mois : %d\n");
+        printf("L'Annee : %d\n");
+        printf("Infos Des Passager : \n");
         v = v->next;
     }
 }
@@ -121,10 +229,6 @@ void menuPrincipal(){
     printf("11- Fermer Le Programme\n");
 }
 int main(){
-    /*vo vol;
-    vol = init(vol);
-    vol = ajoutVol(vol);
-    affich(vol);*/
     int choix;
     vo vol;
     vol = init(vol);
@@ -136,19 +240,19 @@ int main(){
                     vol = ajoutVol(vol);
                     break;
                 case 2 :
-
+                    
                     break;
                 case 3 :
-
+                    recherche(vol);
                     break;
                 case 4 :
-
+                    volappart(vol);
                     break;
                 case 5 :
-
+                    vol = modifdate(vol);
                     break;
                 case 6 :
-
+                    affichtt(vol);
                     break;
                 case 7 :
 
